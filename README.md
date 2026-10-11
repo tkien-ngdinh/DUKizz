@@ -1,16 +1,38 @@
-# React + Vite
+# DUKizz
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+DUKizz is a web quiz application where users can take quizzes, test their knowledge and review their results.
 
-Currently, two official plugins are available:
+## Overview
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- Browse and take quizzes
+- Get instant feedback and a final score
+- Create and manage your own quizzes *(planned)*
 
-## React Compiler
+## Tech stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- React + Vite
+- Tailwind CSS
 
-## Expanding the ESLint configuration
+## Getting started
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+```bash
+git clone <your-repo-url>
+cd dukizz
+npm install
+npm run dev
+```
+
+## Documentation
+
+- [UI design rules](./DUKizz-UI-RULES.md)
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/your-feature`)
+3. Commit your changes
+4. Open a pull request
+
+## License
+
+To be decided.
