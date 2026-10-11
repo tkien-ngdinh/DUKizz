@@ -1,0 +1,310 @@
+@import url("https://fonts.googleapis.com/css2?family=Cal+Sans&family=Momo+Trust+Display&family=Josefin+Sans:ital,wght@0,100..700;1,100..700&display=swap");
+@import "tailwindcss";
+
+@theme {
+  /* Chặn màu mặc định, chỉ còn palette DUKizz */
+  --color-*: initial;
+  --color-cream: #fefbc7;
+  --color-sky: #5eabd6;
+  --color-blush: #ffb4b4;
+  --color-red: #e14434;
+  --color-ink: #111111;
+  --color-white: #ffffff;
+  --color-transparent: transparent;
+
+  --font-display: "Momo Trust Display", "Josefin Sans", sans-serif;
+  --font-heading: "Cal Sans", "Josefin Sans", sans-serif;
+  --font-body: "Josefin Sans", "Cal Sans", sans-serif;
+
+  --radius-sm: 4px;
+  --radius-lg: 8px;
+
+  --shadow-hard-sm: 2px 2px 0 0 #111111;
+  --shadow-hard: 4px 4px 0 0 #111111;
+  --shadow-hard-lg: 8px 8px 0 0 #111111;
+
+  /* Easing: một họ duy nhất, giảm tốc mạnh (exponential ease-out) */
+  --ease-quint: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@layer base {
+  * {
+    font-synthesis: none;
+    scrollbar-color: #5eabd6 #ffffff;
+  }
+  html {
+    background-color: #ffffff;
+    color: #111111;
+    font-family: var(--font-body);
+  }
+  ::selection {
+    background: #ffb4b4;
+    color: #111111;
+  }
+  input,
+  textarea {
+    caret-color: #e14434;
+  }
+  /* Ring focus dùng ink: ring `sky` chỉ đạt 2.5:1 trên white/cream (< 3:1 yêu cầu) */
+  :focus-visible {
+    outline: 3px solid #111111;
+    outline-offset: 2px;
+  }
+  a {
+    text-decoration-thickness: 2px;
+    text-underline-offset: 3px;
+  }
+  /* Focus nhìn thấy được cho lựa chọn đáp án (input nằm trong .choice) */
+  .choice:has(input:focus-visible) {
+    outline: 3px solid #111111;
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation: none !important;
+      transition: none !important;
+    }
+  }
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 min-h-[44px] px-6 py-3 rounded-lg
+           border-2 border-ink shadow-hard font-heading tracking-wide
+           transition-all duration-150 ease-quint
+           hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-hard-sm
+           active:translate-x-1 active:translate-y-1 active:shadow-none
+           disabled:bg-cream disabled:text-ink disabled:italic disabled:shadow-none disabled:cursor-not-allowed;
+  }
+  .btn-sm {
+    @apply px-4 py-2 text-sm;
+  }
+  .btn-primary {
+    @apply bg-sky text-ink;
+  }
+  .btn-cta {
+    @apply bg-red text-ink;
+  }
+  .btn-secondary {
+    @apply bg-white text-ink;
+  }
+  .btn-accent {
+    @apply bg-blush text-ink;
+  }
+  .btn-plain {
+    @apply border-ink shadow-none hover:translate-x-0 hover:translate-y-0 hover:shadow-none hover:bg-blush active:translate-x-0 active:translate-y-0;
+  }
+  .card {
+    @apply bg-cream border-2 border-ink rounded-lg shadow-hard p-6;
+  }
+  .card-interactive {
+    @apply transition-all duration-150 ease-quint hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-hard-sm
+           active:translate-x-1 active:translate-y-1 active:shadow-none;
+  }
+  .card-flat {
+    @apply bg-cream border-2 border-ink rounded-lg;
+  }
+  .input {
+    @apply w-full min-h-[44px] px-4 py-2 bg-white border-2 border-ink rounded-lg text-ink
+           transition-shadow duration-150 focus:shadow-hard;
+  }
+  /* Đáp án: khối trắng trên card cream. Phản hồi hover/active chỉ khi còn tương tác. */
+  .choice {
+    @apply flex items-start gap-3 w-full text-left p-4 rounded-lg border-2 border-ink bg-white
+           shadow-hard-sm cursor-pointer transition-all duration-150 ease-quint;
+  }
+  .choice-live {
+    @apply hover:bg-blush hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none
+           active:translate-x-0.5 active:translate-y-0.5 active:shadow-none;
+  }
+  .choice-disabled {
+    @apply cursor-not-allowed;
+  }
+  .seg {
+    @apply h-2.5 flex-1 border-2 border-ink bg-white transition-colors duration-150;
+  }
+  .seg-done {
+    @apply bg-sky;
+  }
+  .seg-current {
+    @apply bg-blush;
+  }
+}
+
+/* ── Chuyển động ───────────────────────────────────────────────
+   Luận điểm: chỉ hai nơi được "kể chuyện" — (1) chuyển câu hỏi và
+   (2) khoảnh khắc nộp bài; còn lại là phản hồi tức thời.
+   Phản hồi tương tác 150ms · vào trang 200–300ms · khoảnh khắc ≤ 500ms. */
+
+@keyframes q-in {
+  from {
+    opacity: 0;
+    transform: translateX(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes opt-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pop-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes result-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes score-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.55) rotate(-12deg);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+@keyframes bloom {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes nudge {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  20% {
+    transform: translateX(-4px);
+  }
+  60% {
+    transform: translateX(3px);
+  }
+}
+
+@keyframes answer-shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  20% {
+    transform: translateX(-3px);
+  }
+  50% {
+    transform: translateX(3px);
+  }
+  80% {
+    transform: translateX(-2px);
+  }
+}
+
+/* Vào trang: mờ + trượt ngắn */
+.q-enter {
+  animation: q-in 200ms var(--ease-quint) both;
+}
+.pop-in {
+  animation: pop-in 220ms var(--ease-quint) both;
+}
+.toast-in {
+  animation: toast-in 260ms var(--ease-quint) both;
+}
+
+/* Khoảnh khắc nộp bài */
+.result-in {
+  animation: result-in 260ms var(--ease-quint) both;
+}
+.score-pop {
+  animation: score-pop 480ms var(--ease-quint) 120ms both;
+}
+
+/* Khối trang trí Bauhaus "nở" một lần khi vào hero */
+.bloom {
+  animation: bloom 520ms var(--ease-quint) both;
+}
+.bloom-2 {
+  animation-delay: 90ms;
+}
+.bloom-3 {
+  animation-delay: 180ms;
+}
+
+/* Nhắc nhở một lần: đồng hồ sắp hết giờ / câu trả lời sai */
+.nudge {
+  animation: nudge 320ms var(--ease-quint) both;
+}
+.answer-shake {
+  animation: answer-shake 360ms var(--ease-quint) both;
+}
+
+/* Đáp án của câu hỏi nối tiếp nhau xuất hiện */
+.stagger > * {
+  animation: opt-in 280ms var(--ease-quint) both;
+}
+.stagger > :nth-child(1) {
+  animation-delay: 0ms;
+}
+.stagger > :nth-child(2) {
+  animation-delay: 35ms;
+}
+.stagger > :nth-child(3) {
+  animation-delay: 70ms;
+}
+.stagger > :nth-child(4) {
+  animation-delay: 105ms;
+}
+.stagger > :nth-child(5) {
+  animation-delay: 140ms;
+}
+.stagger > :nth-child(6) {
+  animation-delay: 175ms;
+}
+.stagger > :nth-child(n + 7) {
+  animation-delay: 210ms;
+}
